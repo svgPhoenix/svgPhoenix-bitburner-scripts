@@ -14,7 +14,7 @@
 
 # Netscript definitions is pulled automatically
 NetScriptDefinitions.d.ts
-.src/test.ts
+src/test.ts
 
 # https://github.com/github/gitignore/blob/main/Node.gitignore
 
