@@ -1,4 +1,4 @@
-import * as pl from './phoenixLib';
+import { findServers, openPortsAndNuke, millisToMinutesAndSeconds, multiHostExec, multiScriptKill, threadReport } from './phoenixLib';
 import { NS } from '@ns';
 
 /** @param {NS} ns */
@@ -21,7 +21,7 @@ export async function main(ns:NS) {
 
 	// builds an array of all acessible servers
 	// would storing this array in a csv file have any benefit?
-	const hosts = pl.findServers(ns, ["home"], blacklist);
+	const hosts = findServers(ns, ["home"], blacklist);
 	if (enableLogs) { ns.print(hosts); }
 	for (let host of hosts) {
 		ns.scp(["hack.js", "weaken.js", "grow.js"], host, "home");
@@ -35,7 +35,7 @@ export async function main(ns:NS) {
 		let optimalTarget = "";
 		for (let host of hosts) {
 			if (!ns.hasRootAccess(host)) {
-				pl.openPortsAndNuke(ns, host);
+				openPortsAndNuke(ns, host);
 			}
 			//pick a server to target with the zombie hoard
 			let candidateMaxMoney = ns.getServerMaxMoney(host);
@@ -60,7 +60,7 @@ export async function main(ns:NS) {
 		while (remainingTime > 0) {
 			// coordinate all zombie servers to attack the chosen target
 			// #TODO change to "reassessing AT e.g. 5:30"
-			ns.print("  Re-assessing targets in T-" + pl.millisToMinutesAndSeconds(remainingTime));
+			ns.print("  Re-assessing targets in T-" + millisToMinutesAndSeconds(remainingTime));
 			let expectedThreads = 0, executedThreads = 0;
 			const moneyThresh = ns.getServerMaxMoney(optimalTarget) * 0.9;
 			const securityThresh = ns.getServerMinSecurityLevel(optimalTarget) + 5;
@@ -71,7 +71,7 @@ export async function main(ns:NS) {
 				//ns.print("  Current security level: " + securityLevel.toFixed(2) + "\n        Threshold: " + securityThresh.toFixed(2))
 				let weakenMillis = ns.getWeakenTime(optimalTarget) + 5;
 				for (let host of hosts) {
-					pl.multiScriptKill(ns, spawnedScripts, host);
+					multiScriptKill(ns, spawnedScripts, host);
 					let possibleThreads = Math.floor((ns.getServerMaxRam(host) - ns.getServerUsedRam(host)) / weakenCost);
 					if (possibleThreads > 0 && ns.hasRootAccess(host)) {
 						expectedThreads += possibleThreads;
@@ -80,12 +80,12 @@ export async function main(ns:NS) {
 						}
 					}
 				}
-				pl.multiScriptKill(ns, spawnedScripts, "home");
+				multiScriptKill(ns, spawnedScripts, "home");
 				let possibleThreads = Math.floor(homeRAM / weakenCost);
 				if (ns.exec("weaken.js", "home", possibleThreads, optimalTarget)) {
 					executedThreads += possibleThreads;
 				}
-				ns.print(pl.threadReport(expectedThreads, executedThreads, "weaken", weakenMillis));
+				ns.print(threadReport(expectedThreads, executedThreads, "weaken", weakenMillis));
 				ns.print("- - - - - - - - - - - - - - - - - -");
 				await ns.sleep(weakenMillis);
 				remainingTime -= weakenMillis;
@@ -94,7 +94,7 @@ export async function main(ns:NS) {
 				//ns.print("      Current balance: " + moneyLevel.toExponential(2) + "\n        Threshold: " + moneyThresh.toExponential(2))
 				let growMillis = ns.getGrowTime(optimalTarget) + 5;
 				for (let host of hosts) {
-					pl.multiScriptKill(ns, spawnedScripts, host);
+					multiScriptKill(ns, spawnedScripts, host);
 					let possibleThreads = Math.floor((ns.getServerMaxRam(host) - ns.getServerUsedRam(host)) / growCost);
 					if (possibleThreads > 0 && ns.hasRootAccess(host)) {
 						expectedThreads += possibleThreads;
@@ -103,12 +103,12 @@ export async function main(ns:NS) {
 						}
 					}
 				}
-				pl.multiScriptKill(ns, spawnedScripts, "home");
+				multiScriptKill(ns, spawnedScripts, "home");
 				let possibleThreads = Math.floor(homeRAM / growCost);
 				if (ns.exec("grow.js", "home", possibleThreads, optimalTarget)) {
 					executedThreads += possibleThreads;
 				}
-				ns.print(pl.threadReport(expectedThreads, executedThreads, "grow", growMillis));
+				ns.print(threadReport(expectedThreads, executedThreads, "grow", growMillis));
 				ns.print("- - - - - - - - - - - - - - - - - -");
 				await ns.sleep(growMillis);
 				remainingTime -= growMillis;
@@ -117,18 +117,18 @@ export async function main(ns:NS) {
 				let hackMillis = ns.getHackTime(optimalTarget) + 5;
 				let hackThreads = Math.floor(0.5 / ns.hackAnalyze(optimalTarget)); // number of threads to hack 50% of server's money
 				if (hackThreads < 1) { hackThreads = 1; }
-				hackThreads = pl.multiHostExec(ns, "hack.js", hosts, optimalTarget, hackThreads);
+				hackThreads = multiHostExec(ns, "hack.js", hosts, optimalTarget, hackThreads);
 				if(hackThreads == 0){
 					await ns.sleep(hackMillis);
 					remainingTime -= hackMillis;
 					continue;
 				}
-				pl.multiScriptKill(ns, spawnedScripts, "home");
+				multiScriptKill(ns, spawnedScripts, "home");
 				if (ns.exec("hack.js", "home", hackThreads, optimalTarget)) {
 					//FIXME hack thread reporting
 				}
 				// don't run hack() on home since it has such a huge amount of ram that it could drain all of a server's money
-				ns.print(pl.threadReport(expectedThreads, hackThreads, "hack", hackMillis));
+				ns.print(threadReport(expectedThreads, hackThreads, "hack", hackMillis));
 				ns.print("- - - - - - - - - - - - - - - - - -");
 				await ns.sleep(hackMillis);
 				remainingTime -= hackMillis;

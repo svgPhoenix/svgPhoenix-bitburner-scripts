@@ -1,4 +1,4 @@
-import * as pl from "./phoenixLib";
+import {multiHostExec, findServers, millisToMinutesAndSeconds, openPortsAndNuke} from "./phoenixLib";
 import {NS} from "@ns";
 
 /** @param {NS} ns */
@@ -28,7 +28,7 @@ export async function main(ns: NS) {
 		blacklist = ["home", "contracts", "botnet"];
 
 	// not going to store as a file since args may change as script is updated.
-	const hosts = pl.findServers(ns, ["home"], blacklist, true);
+	const hosts = findServers(ns, ["home"], blacklist, true);
 	if (enableLogs) { ns.print(hosts); }
 	// it's not like the hack scripts are going to change while this is running
 	for (let host of hosts) {
@@ -43,7 +43,7 @@ export async function main(ns: NS) {
 		for (let host of hosts) {
 			// hack everything and track how many threads can be executed
 			if (!ns.hasRootAccess(host)) {
-				if (pl.openPortsAndNuke(ns, host)) {
+				if (openPortsAndNuke(ns, host)) {
 					maxHackThreads += ns.getServerMaxRam(host) / hackCost;
 					maxWeakenThreads += ns.getServerMaxRam(host) / weakenCost;
 					maxGrowThreads += ns.getServerMaxRam(host) / growCost;
@@ -82,8 +82,8 @@ export async function main(ns: NS) {
 		let curSec = ns.getServerSecurityLevel(optimalTarget), minSec = ns.getServerMinSecurityLevel(optimalTarget);
 		while (curSec > minSec) {
 			let weakenTime = ns.getWeakenTime(optimalTarget);
-			ns.print("Preliminary weakening: " + curSec + ">" + minSec + " : " + pl.millisToMinutesAndSeconds(weakenTime));
-			pl.multiHostExec(ns, "weaken.js", hosts, optimalTarget);
+			ns.print("Preliminary weakening: " + curSec + ">" + minSec + " : " + millisToMinutesAndSeconds(weakenTime));
+			multiHostExec(ns, "weaken.js", hosts, optimalTarget);
 			ns.exec("weaken.js", "home", homeWeakenThreads, optimalTarget);
 			await ns.sleep(weakenTime + msOfBuffer);
 			curSec = ns.getServerSecurityLevel(optimalTarget);
@@ -99,11 +99,11 @@ export async function main(ns: NS) {
 		}
 		async function growPhase(){
 		while (curMoney < moneyCap) { // can probably use more grow threads and fewer weaken threads
-			ns.print("preliminary growth phase: " + curMoney.toExponential(2) + "/" + moneyCap.toExponential(2) + " : " + pl.millisToMinutesAndSeconds(weakenTime));
-			pl.multiHostExec(ns, "weaken.js", hosts, optimalTarget, Math.floor(maxWeakenThreads * 0.33));
+			ns.print("preliminary growth phase: " + curMoney.toExponential(2) + "/" + moneyCap.toExponential(2) + " : " + millisToMinutesAndSeconds(weakenTime));
+			multiHostExec(ns, "weaken.js", hosts, optimalTarget, Math.floor(maxWeakenThreads * 0.33));
 			ns.exec("weaken.js", "home", Math.floor(homeWeakenThreads * 0.33), optimalTarget);
 			await ns.sleep(weakenTime - (growTime + msOfBuffer));
-			pl.multiHostExec(ns, "grow.js", hosts, optimalTarget, Math.floor(maxGrowThreads * 0.66));
+			multiHostExec(ns, "grow.js", hosts, optimalTarget, Math.floor(maxGrowThreads * 0.66));
 			ns.exec("grow.js", "home", Math.floor(homeGrowThreads * 0.66), optimalTarget);
 			await ns.sleep(growTime + msOfBuffer);
 			curMoney = ns.getServerMoneyAvailable(optimalTarget);
@@ -114,7 +114,7 @@ export async function main(ns: NS) {
 			ns.print("testing hack");
 			let hackThreads = Math.floor(0.5 / ns.hackAnalyze(optimalTarget)); // number of threads to hack 50% of server's money
 			if (hackThreads < 1) { hackThreads = 1; }
-			pl.multiHostExec(ns, "hack.js", hosts, optimalTarget, hackThreads);
+			multiHostExec(ns, "hack.js", hosts, optimalTarget, hackThreads);
 
 			
 
