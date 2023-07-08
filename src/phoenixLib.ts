@@ -1,4 +1,4 @@
-import {NS} from "@ns";
+import { NS } from "@ns";
 /**
  * @param {NS} ns
  * @param {number} expected 
@@ -76,7 +76,7 @@ export function findServers(ns: NS, hosts = ["home"], blacklist: string[] = [], 
  * @param {string} toNuke 
  * hostname of server to nuke
  */
-export function openPortsAndNuke(ns: NS, toNuke:string) {
+export function openPortsAndNuke(ns: NS, toNuke: string) {
 	let openPorts = 0;
 	if (ns.fileExists("SQLInject.exe")) {
 		ns.sqlinject(toNuke);
@@ -116,15 +116,15 @@ export function openPortsAndNuke(ns: NS, toNuke:string) {
  * @param {string} host
  * name of server to kill scripts on
  */
-export function multiScriptKill(ns: NS, toKill:string[], host:string) {
+export function multiScriptKill(ns: NS, toKill: string[], host: string) {
 	for (var script of toKill) {
 		ns.scriptKill(script, host);
 	}
 }
 /**@param {NS} ns */
-export function getRunningScripts(ns: NS, filename:string, hostname: string | undefined, _args = []):number[] {
+export function getRunningScripts(ns: NS, filename: string, hostname: string | undefined, _args = []): number[] {
 	let runningScripts = ns.ps(hostname);
-	let instances:number[] = [];
+	let instances: number[] = [];
 	for (let script of runningScripts) {
 		if (script.filename == filename) {
 			let isSame = true;
@@ -152,35 +152,38 @@ export function getRunningScripts(ns: NS, filename:string, hostname: string | un
  * @param {string} args
  * @returns index of the passed array of hostnames at which the request was fulfilled
 */
-export function multiHostExec(ns:NS, script: string, hostnames: string[], args:string, threads = 9999999999) {
+export function multiHostExec(ns: NS, script: string, hostnames: string[], args: string, threads = 9999999999) {
 	const scriptCost = ns.getScriptRam(script);
 	for (let i = 0; i < hostnames.length; i++) {
-		if(!ns.hasRootAccess(hostnames[i])) {continue}
+		if (!ns.hasRootAccess(hostnames[i])) { continue; }
 		const free = ns.getServerMaxRam(hostnames[i]) - ns.getServerUsedRam(hostnames[i]);
 		const hostCapacity = Math.floor(free / scriptCost);
 		const threadsToExec = Math.min(hostCapacity, threads);
-		if(threadsToExec == 0){continue;}
+		if (threadsToExec == 0) { continue; }
 		if (ns.exec(script, hostnames[i], threadsToExec, args)) {
 			threads -= threadsToExec;
 		}
-		if (threads == 0) {return i;}
+		if (threads == 0) { return i; }
 	}
 	return threads;
 }
 
-export function execFromTerminal(command:string){
+export function execFromTerminal(command: string) {
 	// Acquire a reference to the terminal text field
 	const terminalInput = document.getElementById("terminal-input")!;
 
 	// Set the value to the command you want to run.
-	terminalInput.value=command;
+	//@ts-ignore
+	terminalInput.value = command;
 
 	// Get a reference to the React event handler.
 	const handler = Object.keys(terminalInput)[1];
 
 	// Perform an onChange event to set some internal values.
-	terminalInput[handler].onChange({target:terminalInput});
+	//@ts-ignore
+	terminalInput[handler].onChange({ target: terminalInput });
 
 	// Simulate an enter press
-	terminalInput[handler].onKeyDown({key:'Enter',preventDefault:()=>null});
+	//@ts-ignore
+	terminalInput[handler].onKeyDown({ key: 'Enter', preventDefault: () => null });
 }

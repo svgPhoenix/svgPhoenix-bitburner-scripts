@@ -1,4 +1,4 @@
-export function compressionII(compressed:string) {
+export function compressionII(compressed: string) {
 	let decompressed = "";
 	//true = "type A"
 	let chunkType = true;
@@ -31,7 +31,7 @@ export function compressionII(compressed:string) {
 	return decompressed;
 }
 
-export function algorithmicStocksI(prices:number[]) {
+export function algorithmicStocksI(prices: number[]) {
 	let maxCur = 0;
 	let maxSoFar = 0;
 	for (let i = 1; i < prices.length; ++i) {
@@ -43,7 +43,7 @@ export function algorithmicStocksI(prices:number[]) {
 }
 
 //TODO this is Gryphon's algorithm
-export function encryptionI(data:[string, number]) {
+export function encryptionI(data: [string, number]) {
 	let List = [
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		"ZABCDEFGHIJKLMNOPQRSTUVWXY",
@@ -71,7 +71,7 @@ export function encryptionI(data:[string, number]) {
 		"DEFGHIJKLMNOPQRSTUVWXYZABC",
 		"CDEFGHIJKLMNOPQRSTUVWXYZAB",
 		"BCDEFGHIJKLMNOPQRSTUVWXYZA"
-	]
+	];
 	let code = data[0];
 	let shift = data[1];
 
@@ -92,7 +92,7 @@ export function encryptionI(data:[string, number]) {
 	return (output);
 }
 
-export function compressionI(data:string) {
+export function compressionI(data: string) {
 	var runChar = data.charAt(0);
 	var runLen = 1;
 	var compressed = "";

@@ -2,7 +2,7 @@ import { findServers, openPortsAndNuke, millisToMinutesAndSeconds, multiHostExec
 import { NS } from '@ns';
 
 /** @param {NS} ns */
-export async function main(ns:NS) {
+export async function main(ns: NS) {
 	const enableLogs = ns.args.includes("--enable-logs");
 	ns.disableLog("ALL");
 	//ns.enableLog("exec");
@@ -46,15 +46,15 @@ export async function main(ns:NS) {
 			}
 		}
 		if (ns.args.includes("--target")) {
-			ns.tprint("target overridden by args")
+			ns.tprint("target overridden by args");
 			optimalTarget = ns.args[ns.args.indexOf("--target") + 1].toString();
 		}
 
 		let homeRAM = Math.floor(ns.getServerMaxRam("home") * 7 / 8);
 		let currentTime = new Date(Date.now());
-		ns.print("[] [] [] [] [] [] [] [] [] [] [] []")
+		ns.print("[] [] [] [] [] [] [] [] [] [] [] []");
 		ns.print("   Re-assessed targets at " + currentTime.getHours() + ":" + currentTime.getMinutes() + ". \n      Targeting " + optimalTarget);
-		ns.print("[] [] [] [] [] [] [] [] [] [] [] []")
+		ns.print("[] [] [] [] [] [] [] [] [] [] [] []");
 
 		let remainingTime = 36e5;
 		while (remainingTime > 0) {
@@ -118,7 +118,7 @@ export async function main(ns:NS) {
 				let hackThreads = Math.floor(0.5 / ns.hackAnalyze(optimalTarget)); // number of threads to hack 50% of server's money
 				if (hackThreads < 1) { hackThreads = 1; }
 				hackThreads = multiHostExec(ns, "hack.js", hosts, optimalTarget, hackThreads);
-				if(hackThreads == 0){
+				if (hackThreads == 0) {
 					await ns.sleep(hackMillis);
 					remainingTime -= hackMillis;
 					continue;

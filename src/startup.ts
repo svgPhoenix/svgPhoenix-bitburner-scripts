@@ -1,8 +1,8 @@
-import {multiScriptKill} from "./phoenixLib";
-import {NS} from "@ns";
+import { multiScriptKill } from "./phoenixLib";
+import { NS } from "@ns";
 
 /** @param {NS} ns */
-export async function main(ns:NS) {
+export async function main(ns: NS) {
 	/**#TODO
 	 * make or buy hacking programs
 	 * manage factions

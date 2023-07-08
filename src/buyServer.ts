@@ -1,22 +1,21 @@
-import {NS} from '@ns';
+import { NS } from '@ns';
 /** @param {NS} ns */
-export async function main(ns:NS) {
+export async function main(ns: NS) {
 	const flags = ns.flags([
 		["help", true],
 		["name", ""],
 		["size", 2],
 		["ui", false],
 		["scripts", []]
-	])
-	if( typeof flags.help != "boolean" ||
+	]);
+	if (typeof flags.help != "boolean" ||
 		typeof flags.name != "string" ||
 		typeof flags.size != "number" ||
 		typeof flags.ui != "boolean" ||
-		!Array.isArray(flags.scripts))
-		{
-			throw new Error("one or more argument was of the incorrect type");
-		}
-	if(ns.args.includes("--help")){
+		!Array.isArray(flags.scripts)) {
+		throw new Error("one or more argument was of the incorrect type");
+	}
+	if (ns.args.includes("--help")) {
 		ns.tprint("Buys a server with the most RAM the player can afford, ");
 		ns.tprint("	and names it \"autoPurchase#(PID)\"");
 		ns.tprint();
@@ -26,7 +25,7 @@ export async function main(ns:NS) {
 		return;
 	}
 
-	if(flags.ui){ns.tail()};
+	if (flags.ui) { ns.tail(); };
 	let serverSize = 2;
 	const player = ns.getPlayer();
 	const playerMoney = player.money;
@@ -56,7 +55,7 @@ export async function main(ns:NS) {
 
 	ns.print("Buying server with " + serverSize + "GB");
 
-	let serverName:string;
+	let serverName: string;
 	if (flags.name.length > 0) {
 		serverName = flags.name;
 	} else {

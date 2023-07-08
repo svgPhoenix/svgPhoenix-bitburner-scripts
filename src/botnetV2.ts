@@ -1,5 +1,5 @@
-import {multiHostExec, findServers, millisToMinutesAndSeconds, openPortsAndNuke} from "./phoenixLib";
-import {NS} from "@ns";
+import { multiHostExec, findServers, millisToMinutesAndSeconds, openPortsAndNuke } from "./phoenixLib";
+import { NS } from "@ns";
 
 /** @param {NS} ns */
 export async function main(ns: NS) {
@@ -9,9 +9,9 @@ export async function main(ns: NS) {
 		customTarget = ns.args.includes("--target"),
 		logTargeting = ns.args.includes("--log-targeting"),
 		msOfBuffer = 30;
-	ns.disableLog("ALL"); 
+	ns.disableLog("ALL");
 	ns.clearLog();
-	if (enableLogs) { ns.enableLog("exec") }
+	if (enableLogs) { ns.enableLog("exec"); }
 	if (showUI) {
 		ns.tail();
 		ns.atExit(ns.closeTail);
@@ -69,15 +69,15 @@ export async function main(ns: NS) {
 		let homeGrowThreads = homeRAM / growCost;
 
 		if (customTarget) {
-			ns.tprint("target overridden by args")
+			ns.tprint("target overridden by args");
 			optimalTarget = ns.args[ns.args.indexOf("--target") + 1].toString();
 			moneyCap = ns.getServerMaxMoney(optimalTarget);
 		}
 
 		let currentTime = new Date(Date.now());
-		ns.print("[] [] [] [] [] [] [] [] [] [] [] []")
+		ns.print("[] [] [] [] [] [] [] [] [] [] [] []");
 		ns.print("   Re-assessed targets at " + currentTime.getHours() + ":" + currentTime.getMinutes() + ". \n      Targeting " + optimalTarget);
-		ns.print("[] [] [] [] [] [] [] [] [] [] [] []")
+		ns.print("[] [] [] [] [] [] [] [] [] [] [] []");
 
 		let curSec = ns.getServerSecurityLevel(optimalTarget), minSec = ns.getServerMinSecurityLevel(optimalTarget);
 		while (curSec > minSec) {
@@ -91,23 +91,24 @@ export async function main(ns: NS) {
 		let weakenTime = ns.getWeakenTime(optimalTarget),
 			growTime = ns.getGrowTime(optimalTarget),
 			hackTime = ns.getHackTime(optimalTarget),
-		    curMoney = ns.getServerMoneyAvailable(optimalTarget);
-		function updateHackTimes(){
-			weakenTime = ns.getWeakenTime(optimalTarget),
-			growTime = ns.getGrowTime(optimalTarget),
-			hackTime = ns.getHackTime(optimalTarget);
-		}
-		async function growPhase(){
-		while (curMoney < moneyCap) { // can probably use more grow threads and fewer weaken threads
-			ns.print("preliminary growth phase: " + curMoney.toExponential(2) + "/" + moneyCap.toExponential(2) + " : " + millisToMinutesAndSeconds(weakenTime));
-			multiHostExec(ns, "weaken.js", hosts, optimalTarget, Math.floor(maxWeakenThreads * 0.33));
-			ns.exec("weaken.js", "home", Math.floor(homeWeakenThreads * 0.33), optimalTarget);
-			await ns.sleep(weakenTime - (growTime + msOfBuffer));
-			multiHostExec(ns, "grow.js", hosts, optimalTarget, Math.floor(maxGrowThreads * 0.66));
-			ns.exec("grow.js", "home", Math.floor(homeGrowThreads * 0.66), optimalTarget);
-			await ns.sleep(growTime + msOfBuffer);
 			curMoney = ns.getServerMoneyAvailable(optimalTarget);
-		}}
+		function updateHackTimes() {
+			weakenTime = ns.getWeakenTime(optimalTarget),
+				growTime = ns.getGrowTime(optimalTarget),
+				hackTime = ns.getHackTime(optimalTarget);
+		}
+		async function growPhase() {
+			while (curMoney < moneyCap) { // can probably use more grow threads and fewer weaken threads
+				ns.print("preliminary growth phase: " + curMoney.toExponential(2) + "/" + moneyCap.toExponential(2) + " : " + millisToMinutesAndSeconds(weakenTime));
+				multiHostExec(ns, "weaken.js", hosts, optimalTarget, Math.floor(maxWeakenThreads * 0.33));
+				ns.exec("weaken.js", "home", Math.floor(homeWeakenThreads * 0.33), optimalTarget);
+				await ns.sleep(weakenTime - (growTime + msOfBuffer));
+				multiHostExec(ns, "grow.js", hosts, optimalTarget, Math.floor(maxGrowThreads * 0.66));
+				ns.exec("grow.js", "home", Math.floor(homeGrowThreads * 0.66), optimalTarget);
+				await ns.sleep(growTime + msOfBuffer);
+				curMoney = ns.getServerMoneyAvailable(optimalTarget);
+			}
+		}
 		await growPhase();
 		let hour = 3600000;
 		while (hour > 0) {
@@ -116,7 +117,7 @@ export async function main(ns: NS) {
 			if (hackThreads < 1) { hackThreads = 1; }
 			multiHostExec(ns, "hack.js", hosts, optimalTarget, hackThreads);
 
-			
+
 
 			break;
 		}
