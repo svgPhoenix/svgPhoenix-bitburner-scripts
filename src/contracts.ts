@@ -37,7 +37,6 @@ export function main(ns: NS) {
 			}
 		}
 	}
-	//TODO finish the end-of-execution report
 	for (let server in allContracts) {
 		if (allContracts[server].length > 0) {
 			ns.print("\n" + server + ": " + allContracts[server]);
