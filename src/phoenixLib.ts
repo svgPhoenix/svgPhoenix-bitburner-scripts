@@ -12,7 +12,7 @@ import { NS } from "@ns";
  */
 export function threadReport(expected: number, executed: number, operation: string, millis: number) {
 	let toReturn = "";
-	if (executed == executed) {
+	if (expected == executed) {
 		toReturn += "	Threads: " + executed;
 	} else {
 		toReturn += "THREAD EXECUTION ERROR!\nexpected threads: " + expected + "\nexecuted threads: " + executed;
