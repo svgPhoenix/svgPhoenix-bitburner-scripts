@@ -15,7 +15,7 @@ export function threadReport(expected: number, executed: number, operation: stri
 	if (expected == executed) {
 		toReturn += "	Threads: " + executed;
 	} else {
-		toReturn += "THREAD EXECUTION ERROR!\nexpected threads: " + expected + "\nexecuted threads: " + executed;
+		toReturn += "	THREAD EXECUTION ERROR!\n	expected threads: " + expected + "\n	executed threads: " + executed;
 	}
 	return toReturn + "\n     Awaiting " + operation + " for: " + millisToMinutesAndSeconds(millis);
 }
@@ -163,27 +163,45 @@ export function multiHostExec(ns: NS, script: string, hostnames: string[], args:
 		if (ns.exec(script, hostnames[i], threadsToExec, args)) {
 			threads -= threadsToExec;
 		}
-		if (threads == 0) { return i; }
+		if (threads == 0) { return threads; }
 	}
 	return threads;
 }
 
-export function execFromTerminal(command: string) {
-	// Acquire a reference to the terminal text field
-	const terminalInput = document.getElementById("terminal-input")!;
+// export function execFromTerminal(command: string) {
+// 	// Acquire a reference to the terminal text field
+// 	const terminalInput = document.getElementById("terminal-input")!;
 
-	// Set the value to the command you want to run.
-	//@ts-ignore
-	terminalInput.value = command;
+// 	// Set the value to the command you want to run.
+// 	//@ts-ignore
+// 	terminalInput.value = command;
 
-	// Get a reference to the React event handler.
-	const handler = Object.keys(terminalInput)[1];
+// 	// Get a reference to the React event handler.
+// 	const handler = Object.keys(terminalInput)[1];
 
-	// Perform an onChange event to set some internal values.
-	//@ts-ignore
-	terminalInput[handler].onChange({ target: terminalInput });
+// 	// Perform an onChange event to set some internal values.
+// 	//@ts-ignore
+// 	terminalInput[handler].onChange({ target: terminalInput });
 
-	// Simulate an enter press
-	//@ts-ignore
-	terminalInput[handler].onKeyDown({ key: 'Enter', preventDefault: () => null });
+// 	// Simulate an enter press
+// 	//@ts-ignore
+// 	terminalInput[handler].onKeyDown({ key: 'Enter', preventDefault: () => null });
+// }
+
+export function findPathToServer(ns: NS, target: string, origin?: string) {
+	return findPathRecursive(ns, target, origin || ns.getHostname(), [], []);
+	//TODO CPU: return [path, found] instead of checking path.includes constantly
+	//TODO RAM: prepend to path on the way up from the target instead of building and passing args
+	function findPathRecursive(ns: NS, target: string, origin: string, path: string[], visited: string[]) {
+		visited.push(origin);
+		const neighbors = ns.scan(origin);
+		if (neighbors.includes(target)) { return path.concat([origin, target]); }
+		for (let neighbor of neighbors) {
+			if (visited.includes(neighbor)) { continue; }
+			path = findPathRecursive(ns, neighbor, target, path.concat([origin]), visited);
+			if (path.includes(target)) { return path; }
+			path.pop();
+		}
+		return path;
+	}
 }
