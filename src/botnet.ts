@@ -52,6 +52,7 @@ export async function main(ns: NS) {
 
 		let homeRAM = Math.floor(ns.getServerMaxRam("home") * 7 / 8);
 		let currentTime = new Date(Date.now());
+		// FIXME prints only one zero on the hour (e.g. 9:0 instead of 09:00)
 		ns.print("[] [] [] [] [] [] [] [] [] [] [] []");
 		ns.print("   Re-assessed targets at " + currentTime.getHours() + ":" + currentTime.getMinutes() + ". \n      Targeting " + optimalTarget);
 		ns.print("[] [] [] [] [] [] [] [] [] [] [] []");
@@ -66,7 +67,8 @@ export async function main(ns: NS) {
 			const securityThresh = ns.getServerMinSecurityLevel(optimalTarget) + 5;
 			const securityLevel = ns.getServerSecurityLevel(optimalTarget);
 			const moneyLevel = ns.getServerMoneyAvailable(optimalTarget);
-			// move this logic to a separate function to clean code
+			// TODO move this logic to a separate function to clean code
+			// FIXME epcectedThreads > executed threads
 			if (securityLevel > securityThresh) {
 				//ns.print("  Current security level: " + securityLevel.toFixed(2) + "\n        Threshold: " + securityThresh.toFixed(2))
 				let weakenMillis = ns.getWeakenTime(optimalTarget) + 5;
@@ -82,6 +84,7 @@ export async function main(ns: NS) {
 				}
 				multiScriptKill(ns, spawnedScripts, "home");
 				let possibleThreads = Math.floor(homeRAM / weakenCost);
+				expectedThreads += possibleThreads;
 				if (ns.exec("weaken.js", "home", possibleThreads, optimalTarget)) {
 					executedThreads += possibleThreads;
 				}
@@ -90,6 +93,7 @@ export async function main(ns: NS) {
 				await ns.sleep(weakenMillis);
 				remainingTime -= weakenMillis;
 				continue;
+				// TODO only grow as needed and fill extra threads with weaken
 			} else if (moneyLevel < moneyThresh) {
 				//ns.print("      Current balance: " + moneyLevel.toExponential(2) + "\n        Threshold: " + moneyThresh.toExponential(2))
 				let growMillis = ns.getGrowTime(optimalTarget) + 5;
@@ -105,6 +109,7 @@ export async function main(ns: NS) {
 				}
 				multiScriptKill(ns, spawnedScripts, "home");
 				let possibleThreads = Math.floor(homeRAM / growCost);
+				expectedThreads += possibleThreads;
 				if (ns.exec("grow.js", "home", possibleThreads, optimalTarget)) {
 					executedThreads += possibleThreads;
 				}
@@ -114,21 +119,17 @@ export async function main(ns: NS) {
 				remainingTime -= growMillis;
 				continue;
 			} else {
-				let hackMillis = ns.getHackTime(optimalTarget) + 5;
-				let hackThreads = Math.floor(0.5 / ns.hackAnalyze(optimalTarget)); // number of threads to hack 50% of server's money
-				if (hackThreads < 1) { hackThreads = 1; }
-				hackThreads = multiHostExec(ns, "hack.js", hosts, optimalTarget, hackThreads);
-				if (hackThreads == 0) {
-					await ns.sleep(hackMillis);
-					remainingTime -= hackMillis;
-					continue;
-				}
+				let hackMillis = ns.getHackTime(optimalTarget) + 5,
+					homeThreads = Math.floor(homeRAM / hackCost);
+				expectedThreads = Math.floor(0.5 / ns.hackAnalyze(optimalTarget)); // number of threads to hack 50% of server's money
+				if (expectedThreads < 1) { expectedThreads = 1; }
+				executedThreads = expectedThreads - multiHostExec(ns, "hack.js", hosts, optimalTarget, expectedThreads);
 				multiScriptKill(ns, spawnedScripts, "home");
-				if (ns.exec("hack.js", "home", hackThreads, optimalTarget)) {
-					//FIXME hack thread reporting
+				if (homeThreads < expectedThreads) { expectedThreads = homeThreads + executedThreads; } //add executedThreads because it gets subtracted in the exec
+				if (ns.exec("hack.js", "home", expectedThreads - executedThreads, optimalTarget)) {
+					executedThreads += expectedThreads - executedThreads;
 				}
-				// don't run hack() on home since it has such a huge amount of ram that it could drain all of a server's money
-				ns.print(threadReport(expectedThreads, hackThreads, "hack", hackMillis));
+				ns.print(threadReport(expectedThreads, executedThreads, "hack", hackMillis));
 				ns.print("- - - - - - - - - - - - - - - - - -");
 				await ns.sleep(hackMillis);
 				remainingTime -= hackMillis;
