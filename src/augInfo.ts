@@ -17,12 +17,12 @@ export async function main(ns: NS) {
   let toPrint =
     '\n\nOwned Augs:\n' + ownedAugs.join('\n') + '\n\nFaction Augs:\n' + factionAugs.join('\n') + '\n\nUnowned Augs:\n';
   for (const aug of unOwnedAugs) {
-    toPrint += aug + ': ';
+    toPrint += aug + ':\n';
     const stats = ns.singularity.getAugmentationStats(aug);
     for (const property in stats) {
       const stat = (stats as any)[property];
       if (stat == 1) continue;
-      toPrint += property + ': ' + stat + '\n  ';
+      toPrint += '  ' + property + ' * ' + stat + '\n';
     }
   }
   toPrint += '\n\n';
