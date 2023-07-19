@@ -83,7 +83,7 @@ export async function main(ns: NS) {
     );
     ns.print('[] [] [] [] [] [] [] [] [] [] [] []');
 
-    let remainingTime = 18e5; // 30 minutes in ms
+    let remainingTime = 30 * 60 * 1000; // 30 minutes
     while (remainingTime > 0) {
       // coordinate all zombie servers to attack the chosen target
       ns.print('  Re-assessing targets in T-' + millisToMinutesAndSeconds(remainingTime));
