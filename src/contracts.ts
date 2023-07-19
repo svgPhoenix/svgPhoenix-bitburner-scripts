@@ -19,18 +19,10 @@ export function main(ns: NS) {
 			contractType = ns.codingcontract.getContractType(contract, host),
 				data = ns.codingcontract.getData(contract, host);
 			switch (contractType) {
-				case ("Compression II: LZ Decompression"): {
-					handleAttempt(solvers.compressionII, data, contract, host);
-				}
-				case ("Algorithmic Stock Trader I"): {
-					handleAttempt(solvers.algorithmicStocksI, data, contract, host);
-				}
-				case ("Encryption I: Caesar Cipher"): {
-					handleAttempt(solvers.encryptionI, data, contract, host);
-				}
-				case ("Compression I: RLE Compression"): {
-					handleAttempt(solvers.compressionI, data, contract, host);
-				}
+				case ("Compression II: LZ Decompression"): handleAttempt(solvers.compressionII, data, contract, host);
+				case ("Algorithmic Stock Trader I"): handleAttempt(solvers.algorithmicStocksI, data, contract, host);
+				case ("Encryption I: Caesar Cipher"): handleAttempt(solvers.encryptionI, data, contract, host);
+				case ("Compression I: RLE Compression"): handleAttempt(solvers.compressionI, data, contract, host);
 				default: {
 					allContracts[host].push("\n" + contract + ": " + contractType);
 				}

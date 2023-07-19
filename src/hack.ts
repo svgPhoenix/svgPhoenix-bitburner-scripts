@@ -1,5 +1,4 @@
-import { NS } from "@ns";
-/** @param {NS} ns */
+import { NS } from '@ns';
 export async function main(ns: NS) {
-	await ns.hack(ns.args[0].toString());
+  await ns.hack(ns.args[0].toString(), { stock: true });
 }
