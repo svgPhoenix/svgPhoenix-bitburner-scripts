@@ -11,7 +11,9 @@ export async function main(ns: NS) {
   multiScriptKill(ns, toKill, 'home');
   ns.exec('botnet.js', 'home', 1, '--ui');
   ns.exec('contractServerPurchaseWorker.js', 'home');
-  ns.singularity.universityCourse('Rothman University', 'Algorithms', false);
-  while (player.skills.hacking < 50) await ns.sleep(1000);
+  while (player.skills.hacking < 50) {
+    ns.singularity.universityCourse('Rothman University', 'Algorithms', false);
+    await ns.sleep(1000);
+  }
   if (player.skills.strength < 10) ns.exec('autoCrime.js', 'home');
 }
