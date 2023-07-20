@@ -86,12 +86,12 @@ export async function main(ns: NS) {
       // coordinate all zombie servers to attack the chosen target
       ns.print('  Re-assessing targets in T-' + millisToMinutesAndSeconds(remainingTime));
       let expectedThreads = 0,
-        executedThreads = 0;
+        executedThreads = 0,
+        homeRAM = Math.floor(((ns.getServerMaxRam('home') - ns.getServerUsedRam('home')) * 7) / 8);
       const moneyThresh = ns.getServerMaxMoney(optimalTarget) * 0.9,
         securityThresh = ns.getServerMinSecurityLevel(optimalTarget) + 5,
         securityLevel = ns.getServerSecurityLevel(optimalTarget),
-        moneyLevel = ns.getServerMoneyAvailable(optimalTarget),
-        homeRAM = Math.floor((ns.getServerMaxRam('home') * 7) / 8);
+        moneyLevel = ns.getServerMoneyAvailable(optimalTarget);
       if (securityLevel > securityThresh) {
         //ns.print("  Current security level: " + securityLevel.toFixed(2) + "\n        Threshold: " + securityThresh.toFixed(2))
         const weakenMillis = ns.getWeakenTime(optimalTarget) + 5;
