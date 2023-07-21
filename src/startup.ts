@@ -8,12 +8,16 @@ export async function main(ns: NS) {
 
   const toKill = ['weaken.js', 'grow.js', 'hack.js', 'botnet.js'];
   let player = ns.getPlayer();
-  multiScriptKill(ns, toKill, 'home');
-  ns.exec('botnet.js', 'home', 1, '--ui');
-  ns.exec('contractServerPurchaseWorker.js', 'home');
+  if (player.skills.hacking < 50) ns.singularity.universityCourse('Rothman University', 'Algorithms', false);
   while (player.skills.hacking < 50) {
-    ns.singularity.universityCourse('Rothman University', 'Algorithms', false);
+    player = ns.getPlayer();
     await ns.sleep(1000);
   }
+  multiScriptKill(ns, toKill, 'home');
+  ns.exec('blackMarket.js', 'home');
+  await ns.sleep(50);
+  ns.exec('botnet.js', 'home', 1, '--ui');
+  //TODO see fixme on contractServerPurchaseWorker
+  //ns.exec('contractServerPurchaseWorker.js', 'home');
   if (player.skills.strength < 10) ns.exec('autoCrime.js', 'home');
 }
