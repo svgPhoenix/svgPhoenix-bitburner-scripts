@@ -151,9 +151,10 @@ export async function main(ns: NS) {
         multiScriptKill(ns, spawnedScripts, 'home');
         if (homeThreads < expectedThreads) {
           expectedThreads = homeThreads + executedThreads;
-        } //add executedThreads because it gets subtracted in the exec
-        if (ns.exec('hack.js', 'home', expectedThreads - executedThreads, optimalTarget)) {
-          executedThreads += expectedThreads - executedThreads;
+        } //add executedThreads because it gets subtracted in prior the exec
+        const homeThreadsToExec = expectedThreads - executedThreads;
+        if (homeThreadsToExec > 0 && ns.exec('hack.js', 'home', homeThreadsToExec, optimalTarget)) {
+          executedThreads += homeThreadsToExec;
         }
         ns.print(threadReport(expectedThreads, executedThreads, 'hack', hackMillis));
         ns.print('- - - - - - - - - - - - - - - - - -');
