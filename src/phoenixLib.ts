@@ -163,7 +163,7 @@ export function getRunningScripts(ns: NS, filename: string, hostname: string | u
  * @param {string} script
  * @param {number} threads
  * @param {string} args
- * @returns index of the passed array of hostnames at which the request was fulfilled
+ * @returns number of threads executed
  */
 export function multiHostExec(ns: NS, script: string, hostnames: string[], args: string, threads = 9999999999) {
   const scriptCost = ns.getScriptRam(script);
