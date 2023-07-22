@@ -1,4 +1,5 @@
 import { NS } from '@ns';
+import exp from 'constants';
 /** @param {NS} ns */
 export async function main(ns: NS) {
   const flags = ns.flags([
@@ -41,4 +42,8 @@ export async function main(ns: NS) {
       ns.tprint('Try running with the --force option');
     }
   }
+}
+
+export function autocomplete(data: any, args: any) {
+  return data.servers;
 }

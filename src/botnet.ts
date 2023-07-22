@@ -1,3 +1,4 @@
+import { trace } from 'console';
 import {
   findServers,
   openPortsAndNuke,
@@ -10,6 +11,11 @@ import { NS } from '@ns';
 
 /** @param {NS} ns */
 export async function main(ns: NS) {
+  if (ns.getRunningScript()!.server != 'botnet') {
+    ns.alert('botnet.js was run outside of the botnet server.');
+    return;
+  }
+  ns.write('crawlerIgnore.txt');
   const enableLogs = ns.args.includes('--enable-logs'),
     showUI = ns.args.includes('--ui'),
     targetOverride = ns.args.includes('--target');
@@ -27,7 +33,7 @@ export async function main(ns: NS) {
     growCost = ns.getScriptRam('grow.js'),
     hackCost = ns.getScriptRam('hack.js');
   const spawnedScripts = ['weaken.js', 'grow.js', 'hack.js'];
-  const blacklist = ['home', 'contracts', 'botnet'];
+  const blacklist = ['home'];
 
   const hosts = findServers(ns, ['home'], blacklist);
   if (enableLogs) {
@@ -51,7 +57,7 @@ export async function main(ns: NS) {
       }
       //pick a server to target with the zombie hoard
       const candidateMaxMoney = ns.getServerMaxMoney(host);
-      if (ns.args.includes(enableLogs)) {
+      if (enableLogs) {
         ns.print(host + ': ' + candidateMaxMoney.toExponential(2));
       }
       if (
@@ -61,6 +67,7 @@ export async function main(ns: NS) {
       ) {
         bestMoneyCap = candidateMaxMoney;
         optimalTarget = host;
+        if (enableLogs) ns.print('new target: ' + optimalTarget);
       }
     }
     if (targetOverride) {
@@ -164,4 +171,7 @@ export async function main(ns: NS) {
       }
     }
   }
+}
+export function autocomplete(data: any, args: any) {
+  return ['--enable-logs', '--ui', '--target', ...data.servers];
 }

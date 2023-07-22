@@ -45,13 +45,19 @@ export function millisToMinutesAndSeconds(millis: number) {
  * @returns {string[]}
  * list of located servers
  */
-export function findServers(ns: NS, hosts = ['home'], blacklist: string[] = [], excludeNoRAM = true) {
+// IDEA rip off runOptions; implement scanningOptions object
+export function findServers(
+  ns: NS,
+  hosts = ['home'],
+  blacklist: string[] = [],
+  excludeNoRAM = true,
+  respectIgnoreFile = true
+) {
   /*
    * build the initial array of all servers in the network.
    * servers that the caller wishes to exclude must still be added to the array
    * initially in case there are any more servers connected beyond them.
    */
-  // IDEA ignore servers with a file named '.crawlerignore'
   // to allow servers to opt-out of running botnet scripts
   // without modification of the botnet-manager
   for (let i = 0; i < hosts.length; i++) {
@@ -68,10 +74,14 @@ export function findServers(ns: NS, hosts = ['home'], blacklist: string[] = [], 
     let index = hosts.indexOf(host);
     hosts.splice(index, 1);
   }
-
-  // remove servers with no RAM if requested.
-  if (excludeNoRAM) {
-    for (let i = 0; i < hosts.length; i++) {
+  //remove servers requesting to be ignored
+  for (let i = 0; i < hosts.length; i++) {
+    if (respectIgnoreFile && ns.fileExists('crawlerIgnore.txt', hosts[i])) {
+      hosts.splice(i, 1);
+      i -= 1; //because we're shrinking the array we're iterating through
+    }
+    // remove servers with no RAM if requested.
+    if (excludeNoRAM) {
       if (ns.getServerMaxRam(hosts[i]) == 0) {
         hosts.splice(i, 1);
         i -= 1; //because we're shrinking the array we're iterating through
@@ -91,23 +101,23 @@ export function findServers(ns: NS, hosts = ['home'], blacklist: string[] = [], 
  */
 export function openPortsAndNuke(ns: NS, toNuke: string) {
   let openPorts = 0;
-  if (ns.fileExists('SQLInject.exe')) {
+  if (ns.fileExists('SQLInject.exe', 'home')) {
     ns.sqlinject(toNuke);
     openPorts++;
   }
-  if (ns.fileExists('HTTPWorm.exe')) {
+  if (ns.fileExists('HTTPWorm.exe', 'home')) {
     ns.httpworm(toNuke);
     openPorts++;
   }
-  if (ns.fileExists('relaySMTP.exe')) {
+  if (ns.fileExists('relaySMTP.exe', 'home')) {
     ns.relaysmtp(toNuke);
     openPorts++;
   }
-  if (ns.fileExists('FTPCrack.exe')) {
+  if (ns.fileExists('FTPCrack.exe', 'home')) {
     ns.ftpcrack(toNuke);
     openPorts++;
   }
-  if (ns.fileExists('BruteSSH.exe')) {
+  if (ns.fileExists('BruteSSH.exe', 'home')) {
     ns.brutessh(toNuke);
     openPorts++;
   }
@@ -231,5 +241,31 @@ export function findPathToServer(ns: NS, target: string, origin?: string) {
   }
 }
 
-export const factionNames = ['CyberSec', 'Sector-12', 'The Black Hand', 'NiteSec', 'BitRunners'],
-  factionNamesAutofill = ['CyberSec', 'Sector-12', '"The Black Hand"', 'NiteSec', 'BitRunners'];
+export const factionNames = [
+    'CyberSec',
+    'Sector-12',
+    'The Black Hand',
+    'NiteSec',
+    'BitRunners',
+    'Volhaven',
+    'Slum Snakes',
+    'Aevum',
+    'Chongqing',
+    'Tian Di Hui',
+    'New Tokyo',
+    'Ishima'
+  ],
+  factionNamesAutofill = [
+    'CyberSec',
+    'Sector-12',
+    '"The Black Hand"',
+    'NiteSec',
+    'BitRunners',
+    'Volhaven',
+    '"Slum Snakes"',
+    'Aevum',
+    'Chongqing',
+    '"Tian Di Hui"',
+    '"New Tokyo"',
+    'Ishima'
+  ];
