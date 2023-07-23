@@ -1,4 +1,3 @@
-import { multiScriptKill } from './phoenixLib';
 import { NS } from '@ns';
 
 export async function main(ns: NS) {
@@ -6,14 +5,17 @@ export async function main(ns: NS) {
   // make or buy hacking programs
   // manage factions
 
-  let player = ns.getPlayer();
-  if (player.skills.hacking < 50) ns.singularity.universityCourse('Rothman University', 'Algorithms', false);
-  while (player.skills.hacking < 50) {
-    player = ns.getPlayer();
-    await ns.sleep(1000);
-  }
   ns.exec('blackMarket.js', 'home');
+  let player = ns.getPlayer();
+  if (player.skills.hacking < 50) {
+    ns.singularity.universityCourse('Rothman University', 'Algorithms', false);
+    while (player.skills.hacking < 50) {
+      player = ns.getPlayer();
+      await ns.sleep(1000);
+    }
+    ns.singularity.stopAction();
+  }
   await ns.sleep(50);
   ns.exec('scriptHostPurchaseWorker.js', 'home', { preventDuplicates: true });
-  if (player.skills.strength < 10) ns.exec('autoCrime.js', 'home');
+  if (ns.singularity.getCrimeChance('Mug') < 0.9) ns.exec('autoCrime.js', 'home');
 }
