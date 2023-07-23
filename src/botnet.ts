@@ -1,4 +1,3 @@
-import { trace } from 'console';
 import {
   findServers,
   openPortsAndNuke,
