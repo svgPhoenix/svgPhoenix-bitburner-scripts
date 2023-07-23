@@ -23,6 +23,15 @@ export async function main(ns: NS) {
         executable: 'botnet.js',
         isUpToDate: false,
         args: ['--ui']
+      },
+      {
+        //stocks
+        ram: 32,
+        files: ['autoStock.js'],
+        cost: ns.getPurchasedServerCost(32),
+        name: 'stockMarket',
+        executable: 'autoStock.js',
+        isUpToDate: false
       }
     ],
     serversToBuy = servers.length;
