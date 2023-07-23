@@ -1,6 +1,6 @@
 import { NS } from '@ns';
 import { portNames } from './phoenixLib';
-//IDEA botnet_ui as a separate process using ports
+//IDEA unify UI for all constant scripts into one dashboard
 
 /* 
 UI concept
@@ -23,7 +23,7 @@ export async function main(ns: NS) {
   ns.setTitle('Botnet');
   ns.resizeTail(340, 435);
   ns.moveTail(1860, 1);
-  const portNum = portNames.botnet_ui,
+  const portNum = portNames.ui_botnet,
     portHandle = ns.getPortHandle(portNum);
   while (true) {
     await portHandle.nextWrite();

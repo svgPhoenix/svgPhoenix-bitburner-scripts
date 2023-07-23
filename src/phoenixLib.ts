@@ -1,7 +1,9 @@
 import { NS } from '@ns';
 
 export class portNames {
-  static botnet_ui = 1;
+  static ui_botnet = 1;
+  static ui_contracts = 2;
+  static ui_stocks = 3;
 }
 export class botNetOperation {
   targetHostname?: string;
@@ -253,11 +255,11 @@ export const factionNames = [
     'Chongqing',
     'Tian Di Hui',
     'New Tokyo',
-    'Ishima'
+    'Ishima',
+    'The Syndicate'
   ],
   factionNamesAutofill = [
     'CyberSec',
-    'Sector-12',
     '"The Black Hand"',
     'NiteSec',
     'BitRunners',
@@ -267,5 +269,7 @@ export const factionNames = [
     'Chongqing',
     '"Tian Di Hui"',
     '"New Tokyo"',
-    'Ishima'
+    'Ishima',
+    '"The Syndicate"',
+    'Sector-12'
   ];
