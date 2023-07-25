@@ -14,8 +14,8 @@ export async function main(ns: NS) {
     factionAugs = ns.singularity.getAugmentationsFromFaction(hostname),
     ownedAugs = ns.singularity.getOwnedAugmentations(true),
     unOwnedAugs = factionAugs.filter((x) => !ownedAugs.includes(x));
-  let toPrint =
-    '\n\nOwned Augs:\n' + ownedAugs.join('\n') + '\n\nFaction Augs:\n' + factionAugs.join('\n') + '\n\nUnowned Augs:\n';
+  let toPrint = '\n\n';
+  //   '\n\nOwned Augs:\n' + ownedAugs.join('\n') + '\n\nFaction Augs:\n' + factionAugs.join('\n') + '\n\nUnowned Augs:\n';
   for (const aug of unOwnedAugs) {
     toPrint += aug + ':\n';
     const stats = ns.singularity.getAugmentationStats(aug);
@@ -25,7 +25,7 @@ export async function main(ns: NS) {
       toPrint += '  ' + property + ' * ' + stat + '\n';
     }
   }
-  toPrint += '\n\n';
+  toPrint += '\n';
   ns.tprint(toPrint);
 }
 

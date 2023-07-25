@@ -1,4 +1,4 @@
-import { NS } from '@ns';
+import { JobName, NS } from '@ns';
 
 export async function main(ns: NS) {
   ns.disableLog('sleep');
@@ -33,6 +33,14 @@ export async function main(ns: NS) {
         }
       }
 
+      let requiredCha = ns.singularity.getCompanyPositionInfo(factioncorps[i], JobName.IT1).requiredSkills.charisma;
+      if (requiredCha > ns.getPlayer().skills.charisma) {
+        ns.singularity.universityCourse('Rothman University', 'Leadership', false);
+      }
+      do {
+        await ns.sleep(1000);
+      } while (requiredCha > ns.getPlayer().skills.charisma);
+
       if (ns.singularity.applyToCompany(factioncorps[i], 'IT')) {
         //if we can get the tier 2 job
 
@@ -40,6 +48,15 @@ export async function main(ns: NS) {
           await ns.sleep(1000);
         }
       }
+
+      requiredCha = ns.singularity.getCompanyPositionInfo(factioncorps[i], JobName.IT2).requiredSkills.charisma;
+      if (requiredCha > ns.getPlayer().skills.charisma) {
+        ns.singularity.universityCourse('Rothman University', 'Leadership', false);
+      }
+      do {
+        await ns.sleep(1000);
+      } while (requiredCha > ns.getPlayer().skills.charisma);
+
       ns.singularity.applyToCompany(factioncorps[i], 'IT');
       if (ns.singularity.getCompanyFavor(factioncorps[i]) > 50) {
         //only push for a faction invite at 50 favor or better

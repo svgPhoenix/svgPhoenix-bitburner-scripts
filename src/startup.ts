@@ -5,7 +5,6 @@ export async function main(ns: NS) {
   // make or buy hacking programs
   // manage factions
 
-  ns.exec('blackMarket.js', 'home');
   let player = ns.getPlayer();
   if (player.skills.hacking < 50) {
     ns.singularity.universityCourse('Rothman University', 'Algorithms', false);
@@ -14,7 +13,7 @@ export async function main(ns: NS) {
       await ns.sleep(1000);
     }
     ns.singularity.stopAction();
-  }
+  } else ns.exec('blackMarket.js', 'home');
   await ns.sleep(50);
   ns.exec('scriptHostPurchaseWorker.js', 'home', { preventDuplicates: true });
   if (ns.singularity.getCrimeChance('Mug') < 0.9) ns.exec('autoCrime.js', 'home');

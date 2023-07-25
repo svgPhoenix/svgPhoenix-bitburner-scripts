@@ -7,7 +7,7 @@ const assetLiquidityPercent = 0.34,
   assetFixedPercent = 1 - assetLiquidityPercent,
   forecastThresholdLongBuy = 0.57,
   forecastThresholdLongSell = 0.5001,
-  refreshTime = 5200, // stock market updates every 6 seconds
+  refreshTime = 3600, // stock market updates every 6 seconds
   commission = 1e5; // 100k
 
 export async function main(ns: NS) {
