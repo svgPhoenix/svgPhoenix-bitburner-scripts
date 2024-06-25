@@ -26,7 +26,7 @@ export async function main(ns: NS) {
     await ns.asleep(0); //necessary for tail maneuvering to function properly
     ns.setTitle('Botnet Manager');
     ns.resizeTail(340, 435);
-    ns.moveTail(1860, 1);
+    //ns.moveTail(1860, 1);
   }
   const weakenCost = ns.getScriptRam('weaken.js'),
     growCost = ns.getScriptRam('grow.js'),

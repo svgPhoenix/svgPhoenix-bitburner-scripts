@@ -29,7 +29,7 @@ export async function main(ns: NS) {
   await ns.asleep(0);
   ns.setTitle('STONKS');
   ns.resizeTail(180, 435);
-  ns.moveTail(1680, 1);
+  //ns.moveTail(1680, 1);
 
   const symbols = ns.stock.getSymbols();
   let assetsFixed = 0,
