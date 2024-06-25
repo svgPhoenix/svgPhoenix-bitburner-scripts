@@ -20,13 +20,13 @@ export function main(ns: NS) {
         (data = ns.codingcontract.getData(contractFile, host));
       switch (contractType) {
         case 'Compression II: LZ Decompression':
-          handleAttempt(solvers.compressionII, data, contractFile, host);
+          handleAttempt(solvers.compressionII, data, contractFile, host); continue;
         case 'Algorithmic Stock Trader I':
-          handleAttempt(solvers.algorithmicStocksI, data, contractFile, host);
+          handleAttempt(solvers.algorithmicStocksI, data, contractFile, host); continue;
         case 'Encryption I: Caesar Cipher':
-          handleAttempt(solvers.encryptionI, data, contractFile, host);
+          handleAttempt(solvers.encryptionI, data, contractFile, host); continue;
         case 'Compression I: RLE Compression':
-          handleAttempt(solvers.compressionI, data, contractFile, host);
+          handleAttempt(solvers.compressionI, data, contractFile, host); continue;
         default: {
           allContracts[host].push('\n' + contractFile + ': ' + contractType);
         }
